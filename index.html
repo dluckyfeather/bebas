@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paparan Realisasi Anggaran Dinas - Triwulan IV Tahun 2026</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js untuk Grafik Interaktif -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        },
+                        accent: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar & transisi slide */
+        body {
+            overflow: hidden;
+            user-select: none;
+        }
+        .slide-container {
+            transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1), transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .slide-hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(16px) scale(0.99);
+            position: absolute;
+            inset: 0;
+        }
+        .slide-active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+            position: relative;
+        }
+        /* Scrollbar halus di dalam konten slide jika layar kecil */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.4);
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 h-screen w-screen flex flex-col justify-between transition-colors duration-300">
+
+    <!-- Top Header / Bar Navigasi Atas -->
+    <header class="h-14 px-4 sm:px-8 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 flex items-center justify-between z-30 shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-600 to-indigo-700 flex items-center justify-center text-white shadow-md">
+                <i class="fa-solid fa-landmark text-sm"></i>
+            </div>
+            <div>
+                <h1 class="font-display font-bold text-sm sm:text-base tracking-tight text-slate-900 dark:text-white leading-tight">
+                    E-MONEV ANGGARAN 2026
+                </h1>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">
+                    Evaluasi Capaian Kinerja & Serapan Triwulan IV
+                </p>
+            </div>
+        </div>
+
+        <!-- Indikator Progress Bar & Kontrol Cepat -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            <!-- Tombol Daftar Salindia -->
+            <button onclick="toggleSlideOverview()" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition flex items-center gap-2" title="Lihat Semua Salindia (G)">
+                <i class="fa-solid fa-table-cells-large text-primary-600 dark:text-primary-400"></i>
+                <span class="hidden md:inline">Daftar Salindia</span>
+            </button>
+
+            <!-- Tombol Catatan Presenter -->
+            <button onclick="toggleSpeakerNotes()" id="btnNotes" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition flex items-center gap-2" title="Catatan Pembicara (N)">
+                <i class="fa-solid fa-note-sticky text-amber-500"></i>
+                <span class="hidden md:inline">Catatan</span>
+            </button>
+
+            <!-- Tombol Mode Gelap/Terang -->
+            <button onclick="toggleTheme()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 transition" title="Ubah Tema">
+                <i id="themeIcon" class="fa-solid fa-moon"></i>
+            </button>
+
+            <!-- Tombol Layar Penuh -->
+            <button onclick="toggleFullScreen()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 transition hidden sm:flex" title="Layar Penuh (F)">
+                <i class="fa-solid fa-expand"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Progress Line -->
+    <div class="w-full h-1 bg-slate-200 dark:bg-slate-800 shrink-0">
+        <div id="progressBar" class="h-full bg-gradient-to-r from-primary-600 via-indigo-500 to-emerald-500 transition-all duration-300" style="width: 14.28%"></div>
+    </div>
+
+    <!-- Area Utama Salindia (Deck Container) -->
+    <main id="deckWrapper" class="flex-1 relative overflow-hidden p-3 sm:p-6 md:p-8 flex items-center justify-center">
+        <div class="w-full max-w-6xl h-full bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-xl border border-slate-200/80 dark:border-slate-800 relative overflow-hidden flex flex-col">
+
+            <!-- ================= SLIDE 1: SAMPUL / JUDUL ================= -->
+            <section class="slide-container slide-active h-full w-full p-6 sm:p-12 flex flex-col justify-between overflow-y-auto custom-scroll relative" data-title="Sampul Paparan" data-notes="Selamat pagi/siang Bapak/Ibu Pimpinan dan seluruh jajaran kepala bidang. Hari ini kita akan memaparkan evaluasi komprehensif realisasi anggaran dinas memasuki Triwulan IV (akhir tahun) 2026 per posisi November 2026.">
+                <!-- Dekorasi Latar -->
+                <div class="absolute -right-24 -top-24 w-96 h-96 bg-primary-500/10 dark:bg-primary-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-24 -bottom-24 w-80 h-80 bg-emerald-500/10 dark:bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="flex flex-wrap items-center justify-between gap-2 z-10">
+                    <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-primary-50 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-800">
+                        <span class="w-2 h-2 rounded-full bg-primary-600 animate-pulse"></span>
+                        LAPORAN EVALUASI KINERJA KEUANGAN
+                    </span>
+                    <span class="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
+                        <i class="fa-regular fa-calendar mr-1.5"></i> Periode: Triwulan IV (November 2026)
+                    </span>
+                </div>
+
+                <div class="my-auto py-6 z-10 max-w-4xl">
+                    <p class="text-sm sm:text-base font-semibold uppercase tracking-widest text-primary-600 dark:text-primary-400 mb-3">
+                        Dinas Teknis & Pelayanan Publik Daerah
+                    </p>
+                    <h2 class="font-display text-3xl sm:text-5xl md:text-6xl font-extrabold text-slate-900 dark:text-white leading-tight mb-5">
+                        Paparan Realisasi Anggaran <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-emerald-500">Triwulan Akhir 2026</span>
+                    </h2>
+                    <p class="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
+                        Analisis capaian penyerapan DPA-SKPD, progres fisik kegiatan strategis, identifikasi kendala akhir tahun, serta rencana percepatan penyelesaian SPJ menjelang tutup buku tahun anggaran 2026.
+                    </p>
+
+                    <!-- Quick Stat Pills di Sampul -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Pagu DPA 2026</p>
+                            <p class="font-display text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">Rp 84,50 M</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-800/50">
+                            <p class="text-xs text-emerald-700 dark:text-emerald-400 font-medium">Realisasi Keuangan (s.d Nov)</p>
+                            <p class="font-display text-xl sm:text-2xl font-bold text-emerald-700 dark:text-emerald-300 mt-1">86,42% <span class="text-xs font-normal">(Rp 73,02 M)</span></p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/70 dark:border-blue-800/50">
+                            <p class="text-xs text-blue-700 dark:text-blue-400 font-medium">Realisasi Fisik Tertimbang</p>
+                            <p class="font-display text-xl sm:text-2xl font-bold text-blue-700 dark:text-blue-300 mt-1">91,15%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 z-10">
+                    <div>Disusun oleh: <strong>Subbagian Keuangan & Perencanaan Program</strong></div>
+                    <div class="flex items-center gap-2">
+                        <span>Gunakan tombol panah <kbd class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded">→</kbd> atau geser layar untuk navigasi</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= SLIDE 2: RINGKASAN EKSEKUTIF (KPI) ================= -->
+            <section class="slide-container slide-hidden h-full w-full p-6 sm:p-10 flex flex-col justify-between overflow-y-auto custom-scroll" data-title="Ringkasan Eksekutif & KPI" data-notes="Pada salindia kedua ini, kita melihat 4 indikator utama. Realisasi keuangan berada di angka 86,42%, melampaui target moderat minggu kedua November sebesar 85%. Sisa anggaran sebesar Rp 11,48 Miliar sebagian besar merupakan termin akhir kontrak fisik yang jatuh tempo pada awal Desember.">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-primary-600 dark:text-primary-400">01 / Ringkasan Eksekutif</span>
+                            <h2 class="font-display text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1">Ikhtisar Postur & Serapan Anggaran 2026</h2>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+                            <i class="fa-solid fa-circle-check mr-1"></i> Status: On-Track (+1,42% di atas target)
+                        </span>
+                    </div>
+
+                    <!-- 4 Kartu KPI Utama -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <!-- Card 1 -->
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 hover:shadow-md transition">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-wallet"></i>
+                                </span>
+                                <span class="text-xs font-semibold text-slate-500">100% Pagu</span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Total Pagu Perubahan (DPPA)</p>
+                            <h3 class="font-display text-2xl font-bold text-slate-900 dark:text-white mt-1">Rp 84.500.000.000</h3>
+                            <p class="text-[11px] text-slate-500 mt-2">Naik Rp 2,1 M dari DPA Murni</p>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 hover:shadow-md transition">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                </span>
+                                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/40 px-2 py-0.5 rounded-full">86,42%</span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Realisasi SP2D s.d. Nov 2026</p>
+                            <h3 class="font-display text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">Rp 73.024.900.000</h3>
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-3 overflow-hidden">
+                                <div class="bg-emerald-500 h-full rounded-full" style="width: 86.42%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 hover:shadow-md transition">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-hourglass-half"></i>
+                                </span>
+                                <span class="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 rounded-full">13,58%</span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Sisa Anggaran Belum Terserap</p>
+                            <h3 class="font-display text-2xl font-bold text-slate-900 dark:text-white mt-1">Rp 11.475.100.000</h3>
+                            <p class="text-[11px] text-amber-600 dark:text-amber-400 mt-2">Rp 8,9 M sudah berkontrak aktif</p>
+                        </div>
+
+                        <!-- Card 4 -->
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 hover:shadow-md transition">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-piggy-bank"></i>
+                                </span>
+                                <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/40 px-2 py-0.5 rounded-full">Proyeksi</span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Proyeksi Serapan Akhir Des 2026</p>
+                            <h3 class="font-display text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">96,85%</h3>
+                            <p class="text-[11px] text-slate-500 mt-2">Est. Efisiensi / SILPA: Rp 2,66 M</p>
+                        </div>
+                    </div>
+
+                    <!-- Highlight Poin Strategis -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-5 rounded-2xl bg-primary-50/60 dark:bg-primary-950/30 border border-primary-200/70 dark:border-primary-800/50">
+                            <h4 class="font-bold text-sm text-primary-900 dark:text-primary-200 flex items-center gap-2 mb-2">
+                                <i class="fa-solid fa-bolt text-primary-600"></i> Akselerasi Triwulan IV
+                            </h4>
+                            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                                Terjadi lonjakan pencairan sebesar <strong>21,3%</strong> sejak awal Oktober 2026 didorong oleh penyelesaian termin II paket infrastruktur dan pengadaan peralatan layanan publik.
+                            </p>
+                        </div>
+                        <div class="p-5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-800/50">
+                            <h4 class="font-bold text-sm text-emerald-900 dark:text-emerald-200 flex items-center gap-2 mb-2">
+                                <i class="fa-solid fa-shield-halved text-emerald-600"></i> Kepatuhan Tata Kelola
+                            </h4>
+                            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                                Tingkat pengembalian SPM (Surat Perintah Membayar) oleh BUD berada di bawah <strong>1,2%</strong>, menunjukkan kualitas verifikasi kelengkapan SPJ internal yang semakin baik.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= SLIDE 3: TREN REALISASI PER TRIWULAN (INTERACTIVE CHART) ================= -->
+            <section class="slide-container slide-hidden h-full w-full p-6 sm:p-10 flex flex-col justify-between overflow-y-auto custom-scroll" data-title="Tren Realisasi Triwulan I - IV" data-notes="Grafik ini menunjukkan kurva penyerapan kumulatif dari Triwulan I hingga Triwulan IV. Bapak/Ibu dapat mengklik tombol filter untuk membandingkan kinerja tahun 2026 dengan tahun lalu (2025) serta proyeksi akhir Desember.">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-primary-600 dark:text-primary-400">02 / Tren Penyerapan Kumulatif</span>
+                        <h2 class="font-display text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1">Kurva Realisasi Triwulan I – IV Tahun 2026</h2>
+                    </div>
+
+                    <!-- Kontrol Interaktif Grafik -->
+                    <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                        <button onclick="updateTrendChart('all')" id="btnTrendAll" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-700 text-primary-600 dark:text-white shadow-sm transition">
+                            Semua Data
+                        </button>
+                        <button onclick="updateTrendChart('2026')" id="btnTrend2026" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 transition">
+                            Target vs Realisasi 2026
+                        </button>
+                        <button onclick="updateTrendChart('yoy')" id="btnTrendYoy" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 transition">
+                            Banding 2025
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Area Grafik & Insight Samping -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-[280px]">
+                    <div class="lg:col-span-2 bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-200 dark:border-slate-700/70 flex flex-col justify-center relative">
+                        <canvas id="quarterlyTrendChart"></canvas>
+                    </div>
+
+                    <div class="flex flex-col justify-between gap-3">
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                            <div class="flex justify-between items-center text-xs font-semibold text-slate-500 mb-1">
+                                <span>TRIWULAN I (Mar)</span>
+                                <span class="text-slate-800 dark:text-slate-200">16,80%</span>
+                            </div>
+                            <p class="text-xs text-slate-600 dark:text-slate-400">Belanja operasional rutin & persiapan lelang dini paket strategis.</p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                            <div class="flex justify-between items-center text-xs font-semibold text-slate-500 mb-1">
+                                <span>TRIWULAN II (Jun)</span>
+                                <span class="text-slate-800 dark:text-slate-200">41,25%</span>
+                            </div>
+                            <p class="text-xs text-slate-600 dark:text-slate-400">Pencairan uang muka konstruksi & pelaksanaan kegiatan pemberdayaan.</p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                            <div class="flex justify-between items-center text-xs font-semibold text-slate-500 mb-1">
+                                <span>TRIWULAN III (Sep)</span>
+                                <span class="text-slate-800 dark:text-slate-200">65,10%</span>
+                            </div>
+                            <p class="text-xs text-slate-600 dark:text-slate-400">Penyerapan termin fisik I & penyesuaian anggaran pada DPPA 2026.</p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800">
+                            <div class="flex justify-between items-center text-xs font-bold text-primary-700 dark:text-primary-300 mb-1">
+                                <span>TRIWULAN IV (Nov → Des)</span>
+                                <span>86,42% → 96,85%</span>
+                            </div>
+                            <p class="text-xs text-primary-800/80 dark:text-primary-200/80">Pelunasan PHO 100%, honorarium akhir tahun, dan penutupan kas.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= SLIDE 4: REALISASI PER JENIS BELANJA ================= -->
+            <section class="slide-container slide-hidden h-full w-full p-6 sm:p-10 flex flex-col justify-between overflow-y-auto custom-scroll" data-title="Rincian per Jenis Belanja" data-notes="Salindia keempat membedah komposisi berdasarkan jenis belanja: Belanja Pegawai, Belanja Barang dan Jasa, serta Belanja Modal. Klik salah satu kategori pada daftar sebelah kiri untuk melihat detail analisis dan sisa pagu masing-masing.">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-primary-600 dark:text-primary-400">03 / Komposisi Jenis Belanja</span>
+                    <h2 class="font-display text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1 mb-5">Realisasi Berdasarkan Klasifikasi Belanja</h2>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 items-center">
+                    <!-- Chart Doughnut -->
+                    <div class="lg:col-span-5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center h-full max-h-[340px]">
+                        <canvas id="expenseTypeChart"></canvas>
+                    </div>
+
+                    <!-- Detail Interaktif Jenis Belanja -->
+                    <div class="lg:col-span-7 flex flex-col gap-3">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1"><i class="fa-solid fa-hand-pointer mr-1 text-primary-500"></i> Klik kategori di bawah untuk melihat rincian evaluasi:</p>
+
+                        <!-- Item 1: Belanja Pegawai -->
+                        <div onclick="selectExpenseCategory(0)" id="expCard0" class="exp-card cursor-pointer p-4 rounded-2xl border-2 border-primary-500 bg-primary-50/40 dark:bg-primary-900/20 transition">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                                    <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">1. Belanja Pegawai</h3>
+                                </div>
+                                <div class="text-right">
+                                    <span class="font-display font-bold text-base text-blue-600 dark:text-blue-400">91,80%</span>
+                                    <span class="text-xs text-slate-500 ml-1">(Rp 22,95 M / Rp 25,00 M)</span>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full mt-2.5 overflow-hidden">
+                                <div class="bg-blue-500 h-full rounded-full" style="width: 91.8%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Item 2: Belanja Barang & Jasa -->
+                        <div onclick="selectExpenseCategory(1)" id="expCard1" class="exp-card cursor-pointer p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 hover:border-emerald-400 transition">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                                    <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">2. Belanja Barang & Jasa</h3>
+                                </div>
+                                <div class="text-right">
+                                    <span class="font-display font-bold text-base text-emerald-600 dark:text-emerald-400">85,60%</span>
+                                    <span class="text-xs text-slate-500 ml-1">(Rp 32,10 M / Rp 37,50 M)</span>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full mt-2.5 overflow-hidden">
+                                <div class="bg-emerald-500 h-full rounded-full" style="width: 85.6%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Item 3: Belanja Modal -->
+                        <div onclick="selectExpenseCategory(2)" id="expCard2" class="exp-card cursor-pointer p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 hover:border-amber-400 transition">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                                    <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">3. Belanja Modal (Peralatan & Gedung)</h3>
+                                </div>
+                                <div class="text-right">
+                                    <span class="font-display font-bold text-base text-amber-600 dark:text-amber-400">81,70%</span>
+                                    <span class="text-xs text-slate-500 ml-1">(Rp 17,97 M / Rp 22,00 M)</span>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full mt-2.5 overflow-hidden">
+                                <div class="bg-amber-500 h-full rounded-full" style="width: 81.7%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Box Penjelasan Dinamis -->
+                        <div id="expenseDetailBox" class="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-700 dark:text-slate-300 mt-1">
+                            <strong>Catatan Belanja Pegawai:</strong> Sisa pagu Rp 2,05 Miliar dialokasikan untuk pembayaran gaji bulan Desember 2026 serta TPP (Tambahan Penghasilan Pegawai) Triwulan IV yang akan cair pada minggu kedua Desember.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= SLIDE 5: CAPAIAN PER BIDANG / PROGRAM (INTERACTIVE TABLE & SORT) ================= -->
+            <section class="slide-container slide-hidden h-full w-full p-6 sm:p-10 flex flex-col justify-between overflow-y-auto custom-scroll" data-title="Capaian per Bidang / Unit Kerja" data-notes="Mari kita lihat perbandingan kinerja antar bidang. Bidang Infrastruktur & Sarana memiliki pagu terbesar dengan serapan 84,5%. Sementara Sekretariat mencatatkan serapan tertinggi di 90,2%. Bapak/Ibu bisa mengurutkan tabel berdasarkan pagu maupun persentase serapan.">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-primary-600 dark:text-primary-400">04 / Kinerja Unit Kerja</span>
+                            <h2 class="font-display text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1">Realisasi Anggaran per Bidang / Sekretariat</h2>
+                        </div>
+
+                        <!-- Filter / Urutkan -->
+                        <div class="flex items-center gap-2">
+                            <label for="sortBidang" class="text-xs text-slate-500 dark:text-slate-400">Urutkan:</label>
+                            <select id="sortBidang" onchange="renderBidangTable()" class="text-xs font-medium bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                <option value="default">Urutan Struktur Organisasi</option>
+                                <option value="persen_desc">Serapan Tertinggi (%)</option>
+                                <option value="persen_asc">Serapan Terendah (%)</option>
+                                <option value="pagu_desc">Pagu Anggaran Terbesar</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Tabel Responsif -->
+                    <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 dark:bg-slate-800/90 text-slate-600 dark:text-slate-300 text-xs uppercase tracking-wider">
+                                    <th class="py-3.5 px-4 font-semibold">Bidang / Unit Kerja</th>
+                                    <th class="py-3.5 px-4 font-semibold text-right">Pagu DPPA (Rp)</th>
+                                    <th class="py-3.5 px-4 font-semibold text-right">Realisasi (Rp)</th>
+                                    <th class="py-3.5 px-4 font-semibold text-center">Serapan (%)</th>
+                                    <th class="py-3.5 px-4 font-semibold text-center">Fisik (%)</th>
+                                    <th class="py-3.5 px-4 font-semibold">Status & Fokus Akhir Tahun</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bidangTableBody" class="divide-y divide-slate-200 dark:divide-slate-800 text-xs sm:text-sm">
+                                <!-- Diisi via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-4 p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/50 flex items-center gap-3 text-xs text-amber-900 dark:text-amber-200">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-500 text-base shrink-0"></i>
+                    <span><strong>Perhatian Khusus:</strong> Bidang Pengembangan Teknologi & Layanan Digital (81,90%) memiliki 2 paket pengadaan server/perangkat lunak dengan batas akhir serah terima barang pada <strong>11 Desember 2026</strong>.</span>
+                </div>
+            </section>
+
+            <!-- ================= SLIDE 6: IDENTIFIKASI KENDALA & SIMULASI PROYEKSI ================= -->
+            <section class="slide-container slide-hidden h-full w-full p-6 sm:p-10 flex flex-col justify-between overflow-y-auto custom-scroll" data-title="Kendala & Simulasi Percepatan" data-notes="Pada salindia ini kita memetakan 3 hambatan utama di lapangan beserta mitigasinya. Di sebelah kanan terdapat simulator interaktif: kita dapat mensimulasikan berapa tambahan persentase serapan akhir jika paket-paket tertunda berhasil dicairkan tepat waktu.">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-primary-600 dark:text-primary-400">05 / Mitigasi Risiko & Simulasi</span>
+                    <h2 class="font-display text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1 mb-5">Kendala Lapangan & Simulator Serapan Akhir Tahun</h2>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 items-start">
+                    <!-- Kolom Kiri: Matriks Kendala & Solusi -->
+                    <div class="lg:col-span-7 flex flex-col gap-3">
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                            <div class="flex items-start gap-3">
+                                <span class="w-8 h-8 rounded-lg bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-cloud-rain"></i>
+                                </span>
+                                <div>
+                                    <h4 class="font-bold text-sm text-slate-900 dark:text-white">1. Faktor Cuaca pada Pekerjaan Konstruksi Luar Ruang</h4>
+                                    <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Curah hujan tinggi pada Oktober–November memperlambat pekerjaan finishing 2 titik rehabilitasi fasilitas.</p>
+                                    <p class="text-xs font-medium text-emerald-600 dark:text-emerald-400 mt-1.5"><i class="fa-solid fa-arrow-right mr-1"></i> Mitigasi: Penambahan jam kerja lembur penyedia & pemantauan harian PPK.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                            <div class="flex items-start gap-3">
+                                <span class="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                </span>
+                                <div>
+                                    <h4 class="font-bold text-sm text-slate-900 dark:text-white">2. Keterlambatan Kelengkapan Dokumen SPJ Penyedia</h4>
+                                    <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Beberapa penyedia menumpuk pengajuan termin di akhir bulan sehingga antrean verifikasi meningkat.</p>
+                                    <p class="text-xs font-medium text-emerald-600 dark:text-emerald-400 mt-1.5"><i class="fa-solid fa-arrow-right mr-1"></i> Mitigasi: Penerapan klinik desk verifikasi SPJ cepat setiap Selasa & Kamis.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                            <div class="flex items-start gap-3">
+                                <span class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-truck-fast"></i>
+                                </span>
+                                <div>
+                                    <h4 class="font-bold text-sm text-slate-900 dark:text-white">3. Inden Pengiriman Perangkat E-Katalog</h4>
+                                    <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">Pengiriman perangkat keras khusus membutuhkan waktu distribusi antar-pulau hingga awal Desember.</p>
+                                    <p class="text-xs font-medium text-emerald-600 dark:text-emerald-400 mt-1.5"><i class="fa-solid fa-arrow-right mr-1"></i> Mitigasi: Komitmen tertulis distributor & kesiapan tim PPHP untuk pemeriksaan barang.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kolom Kanan: Simulator Interaktif Realisasi Akhir Desember -->
+                    <div class="lg:col-span-5 p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-950 text-white shadow-lg border border-slate-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400"><i class="fa-solid fa-sliders mr-1.5"></i> Simulator Akhir Tahun</span>
+                            <span class="text-[11px] bg-white/10 px-2 py-0.5 rounded-full">Interaktif</span>
+                        </div>
+                        <h3 class="font-display font-bold text-lg mb-1">Proyeksi Pencairan Sisa Pagu</h3>
+                        <p class="text-xs text-slate-300 mb-4">Geser persentase keberhasilan penyelesaian sisa kontrak (Rp 11,48 M) untuk melihat proyeksi akhir 31 Des 2026:</p>
+
+                        <!-- Slider -->
+                        <div class="mb-4">
+                            <div class="flex justify-between text-xs font-semibold mb-1.5">
+                                <span>Tingkat Penyelesaian Sisa Kontrak:</span>
+                                <span id="simSliderVal" class="text-emerald-400 font-bold">77%</span>
+                            </div>
+                            <input type="range" id="simRange" min="40" max="95" value="77" oninput="calculateSimulation()" class="w-full accent-emerald-500 cursor-pointer h-2 bg-slate-700 rounded-lg">
+                            <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                                <span>Pesimis (40%)</span>
+                                <span>Moderat (77%)</span>
+                                <span>Optimis (95%)</span>
+                            </div>
+                        </div>
+
+                        <!-- Hasil Simulasi -->
+                        <div class="space-y-2.5 pt-3 border-t border-slate-700/80 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-slate-300">Tambahan Realisasi Des 2026:</span>
+                                <span id="simAddRp" class="font-bold text-white">Rp 8,84 Miliar</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-300">Total Realisasi Akhir Tahun:</span>
+                                <span id="simTotalRp" class="font-bold text-emerald-400">Rp 81,86 Miliar</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-2 border-t border-slate-700/80">
+                                <span class="text-slate-200 font-semibold">Persentase Akhir Tahun:</span>
+                                <span id="simFinalPct" class="font-display text-2xl font-extrabold text-emerald-400">96,88%</span>
+                            </div>
+                            <div class="flex justify-between text-[11px] text-slate-400">
+                                <span>Estimasi Sisa Anggaran (SILPA):</span>
+                                <span id="simSilpa">Rp 2,64 Miliar (3,12%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= SLIDE 7: TIMELINE & RENCANA AKSI TUTUP BUKU ================= -->
+            <section class="slide-container slide-hidden h-full w-full p-6 sm:p-10 flex flex-col justify-between overflow-y-auto custom-scroll" data-title="Rencana Aksi & Batas Waktu" data-notes="Sebagai penutup, berikut adalah linimasa kritis menuju penutupan tahun anggaran 2026 sesuai regulasi pengelolaan keuangan daerah. Bapak/Ibu dapat menandai progres kesiapan masing-masing tahapan.">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-5">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-primary-600 dark:text-primary-400">06 / Langkah Tindak Lanjut</span>
+                            <h2 class="font-display text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1">Linimasa Kritis Tutup Buku & Rencana Aksi</h2>
+                        </div>
+                        <span class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300">
+                            <i class="fa-solid fa-clock mr-1"></i> Sisa Waktu Efektif: ± 5 Minggu Kerja
+                        </span>
+                    </div>
+
+                    <!-- Timeline Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border-t-4 border-t-blue-500 border border-slate-200 dark:border-slate-700">
+                            <span class="text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase">Minggu III – IV Nov</span>
+                            <h4 class="font-bold text-sm text-slate-900 dark:text-white mt-1">Percepatan BAST & PHO</h4>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">Penyelesaian pemeriksaan fisik pekerjaan konstruksi dan serah terima barang pengadaan E-Katalog.</p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border-t-4 border-t-indigo-500 border border-slate-200 dark:border-slate-700">
+                            <span class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 uppercase">11 Desember 2026</span>
+                            <h4 class="font-bold text-sm text-slate-900 dark:text-white mt-1">Batas Akhir Pengajuan SPM-LS</h4>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">Seluruh berkas tagihan pihak ketiga (Kontraktual) wajib masuk ke Subbag Keuangan paling lambat 11 Des.</p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border-t-4 border-t-amber-500 border border-slate-200 dark:border-slate-700">
+                            <span class="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase">18 Desember 2026</span>
+                            <h4 class="font-bold text-sm text-slate-900 dark:text-white mt-1">Nihil GU & Penyetoran Pajak</h4>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">Pertanggungjawaban Ganti Uang (GU Nihil), penyetoran seluruh pungutan pajak pusat/daerah ke kas negara.</p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border-t-4 border-t-emerald-500 border border-slate-200 dark:border-slate-700">
+                            <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase">29 – 31 Desember 2026</span>
+                            <h4 class="font-bold text-sm text-slate-900 dark:text-white mt-1">Rekonsiliasi & Tutup Kas</h4>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">Penyetoran sisa Kas Bendahara (TU/UP), Berita Acara Pemeriksaan Kas, dan penyusunan Laporan Keuangan SKPD.</p>
+                        </div>
+                    </div>
+
+                    <!-- Checklist Komitmen Pimpinan (Interaktif) -->
+                    <div class="p-5 rounded-2xl bg-primary-50/70 dark:bg-primary-950/30 border border-primary-200 dark:border-primary-800/60">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-display font-bold text-sm sm:text-base text-primary-950 dark:text-primary-200">
+                                <i class="fa-solid fa-list-check mr-2 text-primary-600"></i> Arahan & Checklist Komitmen Rapat Evaluasi (Klik untuk Tandai):
+                            </h3>
+                            <span id="checklistCounter" class="text-xs font-bold text-primary-700 dark:text-primary-300">2 / 3 Disepakati</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                            <label class="flex items-start gap-2.5 p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-primary-400 transition">
+                                <input type="checkbox" checked onchange="updateChecklistCount()" class="mt-0.5 rounded text-primary-600 focus:ring-primary-500">
+                                <span class="text-slate-700 dark:text-slate-300">Rapat monitoring mingguan setiap hari Senin pagi khusus paket di bawah 80%.</span>
+                            </label>
+                            <label class="flex items-start gap-2.5 p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-primary-400 transition">
+                                <input type="checkbox" checked onchange="updateChecklistCount()" class="mt-0.5 rounded text-primary-600 focus:ring-primary-500">
+                                <span class="text-slate-700 dark:text-slate-300">Identifikasi dini potensi sisa pagu (SILPA efisiensi) paling lambat 27 November 2026.</span>
+                            </label>
+                            <label class="flex items-start gap-2.5 p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-primary-400 transition">
+                                <input type="checkbox" onchange="updateChecklistCount()" class="mt-0.5 rounded text-primary-600 focus:ring-primary-500">
+                                <span class="text-slate-700 dark:text-slate-300">Verifikasi berjenjang oleh PPTK dan PPK sebelum pengajuan berkas ke Bendahara.</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+                    <span>Terima kasih atas perhatian dan sinergi seluruh jajaran.</span>
+                    <button onclick="goToSlide(0)" class="text-primary-600 dark:text-primary-400 font-semibold hover:underline">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> Kembali ke Salindia Awal
+                    </button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Panel Catatan Pembicara (Collapsible Drawer di Bawah) -->
+    <div id="speakerNotesPanel" class="hidden bg-amber-50 dark:bg-slate-900 border-t border-amber-200 dark:border-slate-800 px-6 py-3 text-xs sm:text-sm text-slate-700 dark:text-slate-300 shrink-0 transition-all">
+        <div class="max-w-6xl mx-auto flex items-start justify-between gap-4">
+            <div class="flex items-start gap-2.5">
+                <span class="px-2 py-0.5 rounded bg-amber-200 dark:bg-amber-900/60 text-amber-900 dark:text-amber-300 font-bold text-[11px] uppercase shrink-0 mt-0.5">Catatan Presenter</span>
+                <p id="speakerNotesText" class="leading-relaxed">Memuat catatan...</p>
+            </div>
+            <button onclick="toggleSpeakerNotes()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Bottom Controls / Navigasi Bawah -->
+    <footer class="h-16 px-4 sm:px-8 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex items-center justify-between z-30 shrink-0">
+        <!-- Judul Slide Aktif -->
+        <div class="flex items-center gap-2 max-w-[40%] sm:max-w-xs truncate">
+            <span id="slideCounterBadge" class="px-2.5 py-1 rounded-lg bg-primary-50 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 font-display font-bold text-xs shrink-0">
+                1 / 7
+            </span>
+            <span id="currentSlideTitle" class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 truncate">
+                Sampul Paparan
+            </span>
+        </div>
+
+        <!-- Dots Indikator (Tengah - Desktop) -->
+        <div id="slideDots" class="hidden md:flex items-center gap-2">
+            <!-- Diisi otomatis oleh JS -->
+        </div>
+
+        <!-- Tombol Sebelumnya & Selanjutnya -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            <button id="prevBtn" onclick="prevSlide()" class="px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 disabled:opacity-40 disabled:pointer-events-none transition flex items-center gap-1.5">
+                <i class="fa-solid fa-chevron-left text-xs"></i>
+                <span>Sebelumnya</span>
+            </button>
+            <button id="nextBtn" onclick="nextSlide()" class="px-4 sm:px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white shadow-md shadow-primary-600/20 disabled:opacity-40 disabled:pointer-events-none transition flex items-center gap-1.5">
+                <span>Selanjutnya</span>
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+        </div>
+    </footer>
+
+    <!-- Modal Overview Semua Salindia -->
+    <div id="overviewModal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-4xl w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800 mb-5">
+                <div>
+                    <h3 class="font-display font-bold text-lg text-slate-900 dark:text-white">Daftar Salindia Presentasi</h3>
+                    <p class="text-xs text-slate-500">Pilih salindia untuk melompat langsung ke bagian yang diinginkan</p>
+                </div>
+                <button onclick="toggleSlideOverview()" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="overviewGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-[65vh] overflow-y-auto custom-scroll pr-1">
+                <!-- Diisi otomatis via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript untuk Logika Salindia, Chart, dan Interaktivitas -->
+    <script>
+        // ================= STATE PRESENTASI =================
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide-container');
+        const totalSlides = slides.length;
+        let trendChartInstance = null;
+        let expenseChartInstance = null;
+
+        // Data Bidang / Unit Kerja (Slide 5)
+        const dataBidang = [
+            { nama: "Sekretariat Dinas", pagu: 28500000000, realisasi: 25707000000, fisik: 93.5, status: "Sangat Baik", ket: "Gaji, operasional & layanan perkantoran" },
+            { nama: "Bidang Infrastruktur & Sarana Publik", pagu: 31000000000, realisasi: 26195000000, fisik: 90.8, status: "On-Track", ket: "2 paket fisik tahap finishing PHO" },
+            { nama: "Bidang Pemberdayaan & Kemitraan", pagu: 14200000000, realisasi: 12268800000, fisik: 91.2, status: "Baik", ket: "Pelatihan & fasilitasi selesai 100%" },
+            { nama: "Bidang Pengembangan Teknologi & Digital", pagu: 10800000000, realisasi: 8845200000, fisik: 86.4, status: "Perlu Akselerasi", ket: "Menunggu pengiriman server E-Katalog" }
+        ];
+
+        // Penjelasan Detail Jenis Belanja (Slide 4)
+        const expenseDetails = [
+            "<strong>Catatan Belanja Pegawai:</strong> Sisa pagu Rp 2,05 Miliar dialokasikan untuk pembayaran gaji bulan Desember 2026 serta TPP (Tambahan Penghasilan Pegawai) Triwulan IV yang akan cair pada minggu kedua Desember.",
+            "<strong>Catatan Belanja Barang & Jasa:</strong> Serapan 85,60% meliputi pemeliharaan rutin, jasa pelayanan, perjalanan dinas teknis, dan honorarium narasumber. Sisa Rp 5,40 Miliar sebagian besar merupakan tagihan utilitas dan kegiatan bulan November–Desember.",
+            "<strong>Catatan Belanja Modal:</strong> Serapan 81,70% mencerminkan termin I & II konstruksi serta pengadaan peralatan. Sisa Rp 4,03 Miliar akan dicairkan penuh setelah Berita Acara Serah Terima (BAST) 100% rampung pada awal Desember 2026."
+        ];
+
+        // ================= INISIALISASI SAAT HALAMAN DIMUAT =================
+        window.addEventListener('DOMContentLoaded', () => {
+            // Cek preferensi dark mode sistem
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('themeIcon').className = 'fa-solid fa-sun text-amber-400';
+            }
+
+            initNavigationDots();
+            initOverviewModal();
+            renderBidangTable();
+            initCharts();
+            updateSlideUI();
+            setupTouchSwipe();
+        });
+
+        // ================= NAVIGASI SALINDIA =================
+        function updateSlideUI() {
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.remove('slide-hidden');
+                    slide.classList.add('slide-active');
+                } else {
+                    slide.classList.remove('slide-active');
+                    slide.classList.add('slide-hidden');
+                }
+            });
+
+            // Update Progress Bar & Counter
+            const progressPct = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = `${progressPct}%`;
+            document.getElementById('slideCounterBadge').textContent = `${currentSlide + 1} / ${totalSlides}`;
+
+            const activeTitle = slides[currentSlide].getAttribute('data-title') || `Salindia ${currentSlide + 1}`;
+            const activeNotes = slides[currentSlide].getAttribute('data-notes') || 'Tidak ada catatan khusus untuk salindia ini.';
+            document.getElementById('currentSlideTitle').textContent = activeTitle;
+            document.getElementById('speakerNotesText').textContent = activeNotes;
+
+            // Update State Tombol
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+
+            // Update Dots
+            const dots = document.querySelectorAll('.nav-dot');
+            dots.forEach((dot, idx) => {
+                if (idx === currentSlide) {
+                    dot.className = 'nav-dot w-7 h-2.5 rounded-full bg-primary-600 transition-all duration-300';
+                } else {
+                    dot.className = 'nav-dot w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-700 hover:bg-primary-400 transition-all duration-300';
+                }
+            });
+
+            // Resize charts jika masuk ke slide grafik agar tajam
+            if (currentSlide === 2 && trendChartInstance) trendChartInstance.resize();
+            if (currentSlide === 3 && expenseChartInstance) expenseChartInstance.resize();
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlideUI();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlideUI();
+            }
+        }
+
+        function goToSlide(index) {
+            if (index >= 0 && index < totalSlides) {
+                currentSlide = index;
+                updateSlideUI();
+                document.getElementById('overviewModal').classList.add('hidden');
+            }
+        }
+
+        function initNavigationDots() {
+            const container = document.getElementById('slideDots');
+            container.innerHTML = '';
+            slides.forEach((slide, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'nav-dot w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-700';
+                btn.title = `${index + 1}. ${slide.getAttribute('data-title')}`;
+                btn.onclick = () => goToSlide(index);
+                container.appendChild(btn);
+            });
+        }
+
+        function initOverviewModal() {
+            const grid = document.getElementById('overviewGrid');
+            grid.innerHTML = '';
+            slides.forEach((slide, index) => {
+                const title = slide.getAttribute('data-title');
+                const card = document.createElement('div');
+                card.onclick = () => goToSlide(index);
+                card.className = 'cursor-pointer p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 hover:border-primary-500 hover:shadow-md transition flex flex-col justify-between';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="px-2.5 py-0.5 rounded-md bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 font-bold text-xs">Salindia ${index + 1}</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400"></i>
+                    </div>
+                    <h4 class="font-display font-bold text-sm text-slate-900 dark:text-white">${title}</h4>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // ================= KONTROL KEYBOARD & TOUCH SWIPE =================
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                e.preventDefault();
+                prevSlide();
+            } else if (e.key.toLowerCase() === 'g') {
+                toggleSlideOverview();
+            } else if (e.key.toLowerCase() === 'n') {
+                toggleSpeakerNotes();
+            } else if (e.key.toLowerCase() === 'f') {
+                toggleFullScreen();
+            } else if (e.key === 'Escape') {
+                document.getElementById('overviewModal').classList.add('hidden');
+            }
+        });
+
+        function setupTouchSwipe() {
+            let touchStartX = 0;
+            let touchEndX = 0;
+            const deck = document.getElementById('deckWrapper');
+
+            deck.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            deck.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                const diff = touchStartX - touchEndX;
+                if (Math.abs(diff) > 55) {
+                    if (diff > 0) nextSlide();
+                    else prevSlide();
+                }
+            }, { passive: true });
+        }
+
+        // ================= FITUR UI TAMBAHAN =================
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            html.classList.toggle('dark');
+            if (html.classList.contains('dark')) {
+                icon.className = 'fa-solid fa-sun text-amber-400';
+            } else {
+                icon.className = 'fa-solid fa-moon';
+            }
+            updateChartTheme();
+        }
+
+        function toggleSpeakerNotes() {
+            const panel = document.getElementById('speakerNotesPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        function toggleSlideOverview() {
+            const modal = document.getElementById('overviewModal');
+            modal.classList.toggle('hidden');
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        // ================= GRAFIK INTERAKTIF (CHART.JS) =================
+        function initCharts() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#cbd5e1' : '#475569';
+            const gridColor = isDark ? 'rgba(148, 163, 184, 0.12)' : 'rgba(148, 163, 184, 0.2)';
+
+            // 1. Grafik Tren Triwulan (Slide 3)
+            const ctxTrend = document.getElementById('quarterlyTrendChart').getContext('2d');
+            trendChartInstance = new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: ['TW I (Mar)', 'TW II (Jun)', 'TW III (Sep)', 'TW IV - Nov (Aktual)', 'TW IV - Des (Proyeksi)'],
+                    datasets: [
+                        {
+                            label: 'Realisasi & Proyeksi 2026 (%)',
+                            data: [16.80, 41.25, 65.10, 86.42, 96.85],
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.15)',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#2563eb',
+                            pointRadius: 5,
+                            fill: true,
+                            tension: 0.35
+                        },
+                        {
+                            label: 'Target Rencana Kas 2026 (%)',
+                            data: [15.00, 40.00, 65.00, 85.00, 96.00],
+                            borderColor: '#10b981',
+                            borderDash: [6, 6],
+                            borderWidth: 2.5,
+                            pointBackgroundColor: '#10b981',
+                            pointRadius: 4,
+                            fill: false,
+                            tension: 0.35
+                        },
+                        {
+                            label: 'Realisasi Tahun 2025 (%)',
+                            data: [14.20, 37.80, 60.40, 81.90, 94.10],
+                            borderColor: '#94a3b8',
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            fill: false,
+                            tension: 0.35
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: textColor, font: { family: 'Inter', size: 11 } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y}%`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 105,
+                            ticks: { color: textColor, callback: (v) => v + '%' },
+                            grid: { color: gridColor }
+                        },
+                        x: {
+                            ticks: { color: textColor, font: { size: 11 } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // 2. Grafik Doughnut Jenis Belanja (Slide 4)
+            const ctxExp = document.getElementById('expenseTypeChart').getContext('2d');
+            expenseChartInstance = new Chart(ctxExp, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Belanja Pegawai (Rp 25,0 M)', 'Belanja Barang & Jasa (Rp 37,5 M)', 'Belanja Modal (Rp 22,0 M)'],
+                    datasets: [{
+                        data: [25.0, 37.5, 22.0],
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
+                        borderWidth: 0,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '64%',
+                    onClick: (e, elements) => {
+                        if (elements.length > 0) {
+                            selectExpenseCategory(elements[0].index);
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: textColor, font: { family: 'Inter', size: 11 }, padding: 14 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ` Pagu: Rp ${ctx.parsed} Miliar`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChartTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#cbd5e1' : '#475569';
+            const gridColor = isDark ? 'rgba(148, 163, 184, 0.12)' : 'rgba(148, 163, 184, 0.2)';
+
+            if (trendChartInstance) {
+                trendChartInstance.options.plugins.legend.labels.color = textColor;
+                trendChartInstance.options.scales.y.ticks.color = textColor;
+                trendChartInstance.options.scales.x.ticks.color = textColor;
+                trendChartInstance.options.scales.y.grid.color = gridColor;
+                trendChartInstance.update();
+            }
+            if (expenseChartInstance) {
+                expenseChartInstance.options.plugins.legend.labels.color = textColor;
+                expenseChartInstance.update();
+            }
+        }
+
+        // Filter Dataset Grafik Tren (Slide 3)
+        function updateTrendChart(mode) {
+            if (!trendChartInstance) return;
+            // Reset button styles
+            ['btnTrendAll', 'btnTrend2026', 'btnTrendYoy'].forEach(id => {
+                const btn = document.getElementById(id);
+                btn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 transition';
+            });
+
+            const activeBtnId = mode === 'all' ? 'btnTrendAll' : (mode === '2026' ? 'btnTrend2026' : 'btnTrendYoy');
+            document.getElementById(activeBtnId).className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-700 text-primary-600 dark:text-white shadow-sm transition';
+
+            if (mode === 'all') {
+                trendChartInstance.data.datasets[0].hidden = false;
+                trendChartInstance.data.datasets[1].hidden = false;
+                trendChartInstance.data.datasets[2].hidden = false;
+            } else if (mode === '2026') {
+                trendChartInstance.data.datasets[0].hidden = false;
+                trendChartInstance.data.datasets[1].hidden = false;
+                trendChartInstance.data.datasets[2].hidden = true;
+            } else if (mode === 'yoy') {
+                trendChartInstance.data.datasets[0].hidden = false;
+                trendChartInstance.data.datasets[1].hidden = true;
+                trendChartInstance.data.datasets[2].hidden = false;
+            }
+            trendChartInstance.update();
+        }
+
+        // Interaksi Pilihan Jenis Belanja (Slide 4)
+        function selectExpenseCategory(index) {
+            for (let i = 0; i < 3; i++) {
+                const card = document.getElementById(`expCard${i}`);
+                if (i === index) {
+                    card.className = 'exp-card cursor-pointer p-4 rounded-2xl border-2 border-primary-500 bg-primary-50/40 dark:bg-primary-900/20 transition';
+                } else {
+                    card.className = 'exp-card cursor-pointer p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 hover:border-slate-400 transition';
+                }
+            }
+            document.getElementById('expenseDetailBox').innerHTML = expenseDetails[index];
+        }
+
+        // Render Tabel Bidang (Slide 5)
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID').format(angka);
+        }
+
+        function renderBidangTable() {
+            const sortBy = document.getElementById('sortBidang').value;
+            let list = [...dataBidang];
+
+            if (sortBy === 'persen_desc') {
+                list.sort((a, b) => (b.realisasi / b.pagu) - (a.realisasi / a.pagu));
+            } else if (sortBy === 'persen_asc') {
+                list.sort((a, b) => (a.realisasi / a.pagu) - (b.realisasi / b.pagu));
+            } else if (sortBy === 'pagu_desc') {
+                list.sort((a, b) => b.pagu - a.pagu);
+            }
+
+            const tbody = document.getElementById('bidangTableBody');
+            tbody.innerHTML = '';
+
+            list.forEach(item => {
+                const pct = ((item.realisasi / item.pagu) * 100).toFixed(2);
+                let badgeClass = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300';
+                if (pct < 83) badgeClass = 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300';
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/50 transition';
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 font-semibold text-slate-900 dark:text-white">${item.nama}</td>
+                    <td class="py-3.5 px-4 text-right font-mono text-slate-600 dark:text-slate-300">${formatRupiah(item.pagu)}</td>
+                    <td class="py-3.5 px-4 text-right font-mono font-semibold text-slate-900 dark:text-white">${formatRupiah(item.realisasi)}</td>
+                    <td class="py-3.5 px-4 text-center">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${badgeClass}">${pct}%</span>
+                    </td>
+                    <td class="py-3.5 px-4 text-center font-semibold text-blue-600 dark:text-blue-400">${item.fisik}%</td>
+                    <td class="py-3.5 px-4 text-slate-600 dark:text-slate-400 text-xs">${item.ket}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Simulator Akhir Tahun (Slide 6)
+        function calculateSimulation() {
+            const sliderVal = parseInt(document.getElementById('simRange').value);
+            document.getElementById('simSliderVal').textContent = `${sliderVal}%`;
+
+            const totalPagu = 84.50; // Miliar
+            const realisasiNov = 73.025; // Miliar
+            const sisaPagu = totalPagu - realisasiNov; // 11.475 Miliar
+
+            const tambahanDes = sisaPagu * (sliderVal / 100);
+            const totalAkhir = realisasiNov + tambahanDes;
+            const pctAkhir = (totalAkhir / totalPagu) * 100;
+            const silpa = totalPagu - totalAkhir;
+            const pctSilpa = 100 - pctAkhir;
+
+            document.getElementById('simAddRp').textContent = `Rp ${tambahanDes.toFixed(2).replace('.', ',')} Miliar`;
+            document.getElementById('simTotalRp').textContent = `Rp ${totalAkhir.toFixed(2).replace('.', ',')} Miliar`;
+            document.getElementById('simFinalPct').textContent = `${pctAkhir.toFixed(2).replace('.', ',')}%`;
+            document.getElementById('simSilpa').textContent = `Rp ${silpa.toFixed(2).replace('.', ',')} Miliar (${pctSilpa.toFixed(2).replace('.', ',')}%)`;
+        }
+
+        // Checklist Komitmen (Slide 7)
+        function updateChecklistCount() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const checked = Array.from(checkboxes).filter(c => c.checked).length;
+            document.getElementById('checklistCounter').textContent = `${checked} / ${checkboxes.length} Disepakati`;
+        }
+    </script>
+</body>
+</html>
